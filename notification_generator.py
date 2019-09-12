@@ -112,8 +112,8 @@ def notify_usr():
     msg = MIMEMultipart()
     message = 'You have new notifications!'
     msg['From'] = LOGIN_EMAIL_ID
-    msg['To'] = 'pkarthic@iitk.ac.in'
-    msg['Subject'] = 'Placement iitk'
+    msg['To'] = LOGIN_EMAIL_ID
+    msg['Subject'] = 'Placement iitk!!'
 
     msg.attach(MIMEText(message, 'plain'))
 
