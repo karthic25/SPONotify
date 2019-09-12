@@ -47,7 +47,7 @@ It should be populated with the following variables:
 ## Known Issues (crontab)
 PATH variable passed to crontab might not match! <br />
 This might lead to python run command working in terminal, but not using crontab. <br />
-To resolve this error, set your path before crontab entries. <br />
+To resolve this error, set your path before crontab entries (add below line before python execution command). <br />
 ```
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
 ```
