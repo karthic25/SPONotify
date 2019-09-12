@@ -44,10 +44,10 @@ It should be populated with the following variables:
 
 **Note:** currently, the host email accepted is outlook. This can be changed to other hosts by changing the smtp url
 
-## Known Issues
-PATH variable passed to crontab might not match! 
-This might lead to python run command working in terminal, but not using crontab
-To resolve this error, set your path before crontab entries
+## Known Issues (crontab)
+PATH variable passed to crontab might not match! <br />
+This might lead to python run command working in terminal, but not using crontab. <br />
+To resolve this error, set your path before crontab entries. <br />
 ```
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
 ```
