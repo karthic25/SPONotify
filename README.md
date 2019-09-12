@@ -15,8 +15,9 @@ pip3 install <package-name>
 
 ## Install
 This file is to be downloaded, and run using `crontab` for linux/mac users, `schtasks` for windows users
-**Using `crontab`**
-Crontab entry is to be added to run the file regularly
+
+### Using `crontab`
+Crontab entry is to be added to run the file regularly <br />
 To edit crontab entries:
 ```sh
 crontab -e
@@ -30,16 +31,16 @@ To view crontab entries:
 crontab -l
 ```
 
-**Using `schtasks`**
+### Using `schtasks`
 ```sh
 schtasks /create /sc hourly /st 00:00 /tn "Gen_Notif" /tr \path\to\python3 \path\to\notification_generator.py
 ```
 
 ## Configuring .env file
-This file is to be stored locally in the same folder as the notification_generator.py
-It should be populated with the variables MY_LOGIN_EMAIL_ID, MY_PASSWORD, PORTAL_USR, PORTAL_PWD
-MY_LOGIN_EMAIL_ID, MY_PASSWORD -> email and password to send email
-PORTAL_USR, PORTAL_PWD -> portal user-id and password
+This file is to be stored locally in the same folder as the notification_generator.py <br />
+It should be populated with the variables `MY_LOGIN_EMAIL_ID`, `MY_PASSWORD`, `PORTAL_USR`, `PORTAL_PWD` <br />
+`MY_LOGIN_EMAIL_ID`, `MY_PASSWORD` -> email and password to send email <br />
+`PORTAL_USR`, `PORTAL_PWD` -> portal user-id and password <br />
 
 **Note:** currently, the host email accepted is outlook. This can be changed to other hosts by changing the smtp url
 
