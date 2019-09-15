@@ -7,12 +7,13 @@ These are the required packages, might need to be installed using
 ```sh
 pip3 install <package-name>
 ```
-- `dotenv` for managing environment variables
+- `python-dotenv` for managing environment variables
 - `selenium` for automation of browser login
 - `logging` to ease up debugging process
 - `smtplib` for connecting to outlook (host e-mail account), sending message
 - `email` for managing email format
 
+Also, the chromedriver executable is required, for selenium to use (in a headless way) to initiale login. This can be downloaded at [this site](https://chromedriver.chromium.org/downloads).
 ## Install
 This file is to be downloaded, and run using `crontab` for linux/mac users, `schtasks` for windows users
 
