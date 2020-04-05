@@ -1,6 +1,6 @@
-# notification_generator
+# spo_notification_generator
 ## Introduction
-Checks site for new posts at regular intervals, notifies through e-mail
+Checks SPO (Students' Placement Office, IITK) site for information on new announcements / pre-placement talks / tests / interviews at regular intervals, notifies through e-mail
 
 ## Python3 packages used
 These are the required packages, might need to be installed using
@@ -43,9 +43,10 @@ It should be populated with the following variables:
 - `MY_LOGIN_EMAIL_ID`, `MY_PASSWORD` -> email and password to login into email account and send emails
 - `PORTAL_USR`, `PORTAL_PWD` -> portal user-id and password
 
-**Note:** currently, the host email accepted is outlook. This can be changed to other hosts by changing the smtp url
+**Note:** the host email set is of Outlook. This can be changed to other hosts by changing the smtp url
 
-## Known Issues (crontab)
+## Issues that may pop up
+#### crontab-based
 PATH variable passed to crontab might not match! <br />
 This might lead to python run command working in terminal, but not using crontab. <br />
 To resolve this error, set your path before crontab entries (add below line before python execution command). <br />
