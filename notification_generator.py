@@ -1,154 +1,113 @@
 #!/usr/bin/env python
-# coding: utf-8
-
-# In[28]:
-
-from dotenv import load_dotenv
-load_dotenv()
-
 import os
-LOGIN_EMAIL_ID = os.getenv("MY_LOGIN_EMAIL_ID")
-PASSWORD = os.getenv("MY_PASSWORD")
-usr = os.getenv("PORTAL_USR")
-pwd = os.getenv("PORTAL_PWD")
-POST_ID_FILENAME = 'recent_post.txt'
-LOGGING_FILENAME = 'spo_portal_notification.log'
-# CURR_DIR = os.getcwd()
-CURR_DIR = os.path.dirname(os.path.abspath(__file__))
-POST_ID_PATH = os.path.join(CURR_DIR, POST_ID_FILENAME)
-LOGGING_PATH = os.path.join(CURR_DIR, LOGGING_FILENAME)
-print(POST_ID_PATH, LOGGING_PATH)
-
-
-# In[14]:
-
-
-import selenium
+import smtplib
+import time
+import logging
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.chrome.options import Options
-import time
-import sys
-import os
-import logging
-logging.basicConfig(filename=LOGGING_PATH,level=logging.INFO,format='%(asctime)s %(message)s')
-print('logging')
 
+POST_ID_FILENAME = 'recent_post.txt',
+LOGGING_FILENAME = 'spo_portal_notification.log'
 
-# In[15]:
-options = Options()
-options.headless = True
-driver=webdriver.Chrome(options=options)
-# driver=webdriver.Chrome()
-driver.get('https://placement.iitk.ac.in/')
-logging.info('connected with placement.iitk')
-print('log: connected with placement.iitk')
+def read_dotenv():
+    return {
+        'EMAIL_ID': os.getenv("EMAIL_ID"),
+        'EMAIL_PWD': os.getenv("EMAIL_PWD"),
+        'PORTAL_USR': os.getenv("PORTAL_USR"),
+        'PORTAL_PWD': os.getenv("PORTAL_PWD")
+    }
 
-# In[16]:
+def setup_logging(log_path):
+    logging.basicConfig(filename=log_path, level=logging.INFO, format='%(asctime)s %(message)s')
+    print('Logging initialized')
 
+def get_previous_post_id(post_id_path):
+    if os.path.exists(post_id_path):
+        with open(post_id_path, 'r') as f:
+            prev_id = int(f.read())
+        return prev_id
+    else:
+        with open(post_id_path, 'w') as f:
+            f.write(str(0))
+        return 0
 
-driver.find_element_by_id('id_username').send_keys(usr)
-driver.find_element_by_id('id_password').send_keys(pwd)
+def update_post_id(post_id_path, new_id):
+    with open(post_id_path, 'w') as f:
+        f.write(str(new_id))
 
-
-# In[17]:
-
-
-driver.find_element_by_css_selector("input.btn").click()
-logging.info('signed in')
-print('log: signed in')
-
-
-# In[18]:
-
-
-recent_post = driver.find_element_by_css_selector('div.panel-collapse.collapse')
-recent_post_id = recent_post.get_attribute('id')
-recent_post_id = recent_post_id.split('collapse')[1]
-logging.info('Post ID: %s', recent_post_id)
-print('Post ID: ', recent_post_id)
-
-
-# In[19]:
-
-
-if os.path.exists(POST_ID_PATH):
-    f = open(POST_ID_PATH, 'r')
-    prev_id = int(f.read())
-    f.close()
-else:
-    f = open(POST_ID_PATH, 'w')
-    prev_id = 0
-    f.write(str(prev_id))
-    f.close()
-print('Prev ID: ', prev_id)
-
-
-# In[20]:
-
-
-curr_id = int(recent_post_id)
-print('Curr ID: ', curr_id)
-
-
-# In[ ]:
-
-
-
-
-
-# In[21]:
-
-
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-
-def notify_usr():
+def notify_user(email, password):
     s = smtplib.SMTP(host='smtp-mail.outlook.com', port=587)
     s.starttls()
-    s.login(LOGIN_EMAIL_ID, PASSWORD)
+    s.login(email, password)
     
     msg = MIMEMultipart()
     message = 'You have new notifications!'
-    msg['From'] = LOGIN_EMAIL_ID
-    msg['To'] = LOGIN_EMAIL_ID
+    msg['From'] = email
+    msg['To'] = email
     msg['Subject'] = 'Placement iitk!!'
-
+    
     msg.attach(MIMEText(message, 'plain'))
-
+    
     s.send_message(msg)
+    s.quit()
 
+def main():
+    # load SPO portal login and email login details from ENV variables
+    load_dotenv()
+    env = read_dotenv()
 
-# In[ ]:
+    # set paths for logging test and interview schedules
+    CURR_DIR = os.path.dirname(os.path.abspath(__file__))
+    POST_ID_PATH = os.path.join(CURR_DIR, POST_ID_FILENAME)
+    LOGGING_PATH = os.path.join(CURR_DIR, LOGGING_FILENAME)
 
+    setup_logging(LOGGING_PATH)
 
+    # initialize options to run chrome
+    options = Options()
+    options.headless = True
+    driver = webdriver.Chrome(options=options)
+    
+    try:
+        # go to placement site
+        driver.get('https://placement.iitk.ac.in/')
+        logging.info('Connected with placement.iitk')
 
+        # login
+        driver.find_element_by_id('id_username').send_keys(env['PORTAL_USR'])
+        driver.find_element_by_id('id_password').send_keys(env['PORTAL_PWD'])
 
+        driver.find_element_by_css_selector("input.btn").click()
+        logging.info('Signed in')
 
-# In[22]:
+        # get most recent tests/interviews
+        recent_post = driver.find_element_by_css_selector('div.panel-collapse.collapse')
+        recent_post_id = recent_post.get_attribute('id').split('collapse')[1]
+        logging.info('Post ID: %s', recent_post_id)
 
+        # get previous test/interview received
+        prev_id = get_previous_post_id(POST_ID_PATH)
+        logging.info('Previous ID: %s', prev_id)
+        
+        curr_id = int(recent_post_id)
+        logging.info('Current ID: %s', curr_id)
 
-if curr_id > prev_id:
-    f = open(POST_ID_PATH, 'w')
-    f.write(str(curr_id))
-    f.close()
+        # send email if previous test/interview differs from most recent one
+        if curr_id > prev_id:
+            update_post_id(POST_ID_PATH, curr_id)
+            notify_user(env['EMAIL_ID'], env['EMAIL_PWD'])
+            logging.info('User notified')
+    
+    except Exception as e:
+        logging.error('An error occurred: %s', str(e))
+    
+    finally:
+        # quit driver (even during unexpected exits)
+        driver.quit()
 
-    notify_usr()
-    logging.info('user notified')
-    print('user notified')
-
-driver.quit()
-# In[23]:
-
-
-# f = open(POST_ID_PATH, 'w')
-# f.write(str(0))
-# f.close()
-
-
-# In[ ]:
-
-
-
-
+if __name__ == "__main__":
+    main()
