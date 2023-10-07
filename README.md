@@ -40,7 +40,7 @@ schtasks /create /sc hourly /st 00:00 /tn "Gen_Notif" /tr \path\to\python3 \path
 ## Configuring .env file
 This file is to be stored locally in the same folder as the notification_generator.py. <br />
 It should be populated with the following variables:
-- `EMAIL_USR`, `EMAIL_PWD` -> email and password to login into email account and send emails
+- `EMAIL_ID`, `EMAIL_PWD` -> email and password to login into email account and send emails
 - `PORTAL_USR`, `PORTAL_PWD` -> portal user-id and password
 
 **Note:** the host email set is of Outlook. This can be changed to other hosts by changing the smtp url
